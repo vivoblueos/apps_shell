@@ -35,7 +35,6 @@ pub fn command(args: &[&str]) -> Result<(), String> {
     }
 
     let dst_path = dst.join(src);
-
     copy_file_using_read_write(src, &dst_path)?;
 
     Ok(())
