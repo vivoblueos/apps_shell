@@ -41,7 +41,7 @@ pub fn command(args: &[&str]) -> Result<(), String> {
         // If destination is a file, use it directly.
         dst.to_path_buf()
     };
-    
+
     copy_file_using_read_write(src, &dst_path)?;
 
     Ok(())
