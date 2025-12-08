@@ -34,13 +34,7 @@ pub fn command(args: &[&str]) -> Result<(), String> {
         return Err("Copying directories is not supported".to_string());
     }
 
-    let dst_path = if dst.is_dir() {
-        // If destination is a directory, append the source file name.
-        dst.join(src.file_name().ok_or("Invalid source filename")?)
-    } else {
-        // If destination is a file, use it directly.
-        dst.to_path_buf()
-    };
+    let dst_path = dst.join(src);
 
     copy_file_using_read_write(src, &dst_path)?;
 
