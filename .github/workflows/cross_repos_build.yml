@@ -1,7 +1,7 @@
 true:
   issue_comment:
     types:
-    - created
+      - created
 jobs:
   call_workflow:
     secrets: inherit
