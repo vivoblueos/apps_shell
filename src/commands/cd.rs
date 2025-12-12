@@ -14,6 +14,10 @@
 
 use std::{env, path::Path};
 
+fn home_dir() -> Option<std::path::PathBuf> {
+    env::var("HOME").ok().map(std::path::PathBuf::from)
+}
+
 pub fn command(args: &[&str]) -> Result<(), String> {
     if args.len() != 1 {
         return Err("Usage: cd <directory>".to_string());
@@ -21,12 +25,34 @@ pub fn command(args: &[&str]) -> Result<(), String> {
     let target = args[0];
     let target_path = match target {
         "." => env::current_dir().map_err(|e| format!("Unable to get current directory: {}", e))?,
+        "~" => {
+        // solely ~ means home directory
+        home_dir()
+            .ok_or_else(|| "Unable to determine home directory".to_string())?
+        }
+        path if path.starts_with("~/") => {
+            // starts with ~/
+            let home = home_dir()
+                .ok_or_else(|| "Unable to determine home directory".to_string())?;
+            //remove the ~/
+            let rest = &path[2..]; 
+            home.join(rest)
+        }
         path => {
-            let current_dir = env::current_dir()
-                .map_err(|e| format!("Unable to get current directory: {}", e))?;
-            let mut path_buf = current_dir;
-            for component in Path::new(path).components() {
+            
+            let path_obj = Path::new(path);
+            let mut path_buf = if path_obj.is_absolute() {
+                std::path::PathBuf::new()  // if absolute, start from root
+            } else {
+                env::current_dir()
+                    .map_err(|e| format!("Unable to get current directory: {}", e))?
+            };
+
+            for component in path_obj.components() {
                 match component {
+                    std::path::Component::RootDir => {
+                        path_buf.push("/");
+                    }
                     std::path::Component::ParentDir => {
                         if !path_buf.pop() {
                             return Err("Already at root directory".to_string());
