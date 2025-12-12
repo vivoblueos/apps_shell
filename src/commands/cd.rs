@@ -14,7 +14,7 @@
 
 use std::{env, path::Path};
 
-fn home_dir() -> Option<std::path::PathBuf> {
+fn get_home() -> Option<std::path::PathBuf> {
     env::var("HOME").ok().map(std::path::PathBuf::from)
 }
 
@@ -26,15 +26,13 @@ pub fn command(args: &[&str]) -> Result<(), String> {
     let target_path = match target {
         "." => env::current_dir().map_err(|e| format!("Unable to get current directory: {}", e))?,
         "~" => {
-        // solely ~ means home directory
-        home_dir()
+            // Single ~ means home directory
+            get_home()
             .ok_or_else(|| "Unable to determine home directory".to_string())?
         }
         path if path.starts_with("~/") => {
-            // starts with ~/
-            let home = home_dir()
+            let home = get_hoome()
                 .ok_or_else(|| "Unable to determine home directory".to_string())?;
-            //remove the ~/
             let rest = &path[2..]; 
             home.join(rest)
         }
@@ -42,7 +40,7 @@ pub fn command(args: &[&str]) -> Result<(), String> {
             
             let path_obj = Path::new(path);
             let mut path_buf = if path_obj.is_absolute() {
-                std::path::PathBuf::new()  // if absolute, start from root
+                std::path::PathBuf::new()  
             } else {
                 env::current_dir()
                     .map_err(|e| format!("Unable to get current directory: {}", e))?
