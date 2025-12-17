@@ -26,24 +26,21 @@ pub fn command(args: &[&str]) -> Result<(), String> {
     let target_path = match target {
         "." => env::current_dir().map_err(|e| format!("Unable to get current directory: {}", e))?,
         "~" => {
-            // Single ~ means home directory
-            get_home()
-            .ok_or_else(|| "Unable to determine home directory".to_string())?
+            // Single ~ means home directory.
+            get_home().ok_or_else(|| "Unable to determine home directory".to_string())?
         }
         path if path.starts_with("~/") => {
-            let home = get_hoome()
-                .ok_or_else(|| "Unable to determine home directory".to_string())?;
-            let rest = &path[2..]; 
+            let home =
+                get_home().ok_or_else(|| "Unable to determine home directory".to_string())?;
+            let rest = &path[2..];
             home.join(rest)
         }
         path => {
-            
             let path_obj = Path::new(path);
             let mut path_buf = if path_obj.is_absolute() {
-                std::path::PathBuf::new()  
+                std::path::PathBuf::new()
             } else {
-                env::current_dir()
-                    .map_err(|e| format!("Unable to get current directory: {}", e))?
+                env::current_dir().map_err(|e| format!("Unable to get current directory: {}", e))?
             };
 
             for component in path_obj.components() {
