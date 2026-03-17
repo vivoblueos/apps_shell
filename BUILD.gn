@@ -12,15 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import("//build/templates/reload_autoconf.gni")
 import("//build/templates/rust.gni")
 import("//build/toolchain/blueos.gni")
 
-executable("shell") {
+reload_autoconf("shell_kconfig") {
+  inputs = [
+    "${root_gen_dir}/.config",
+    "test",
+  ]
+  kconfig_path = "//kernel/kconfig/config/Kconfig"
+  autoconf_path = "${root_gen_dir}/.config"
+  app_conf = "test"
+}
+
+build_rust("shell") {
   crate_name = "shell"
   crate_type = "bin"
   sources = [ "src/main.rs" ]
+  inputs = get_target_outputs(":shell_kconfig")
   deps = [
+    ":shell_kconfig",
     "//external/vendor/phf-0.12.1:phf",
+    "//kernel/kconfig:generate_rustflags_file",
     "//kernel/kernel:blueos",
     "//kernel/rsrt:rsrt_std",
     "//libc",
