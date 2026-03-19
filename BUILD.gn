@@ -17,25 +17,19 @@ import("//build/templates/rust.gni")
 import("//build/toolchain/blueos.gni")
 
 reload_autoconf_and_build("shell") {
-  inputs = [
-    "${root_gen_dir}/.config",
-    "app.conf",
-  ]
-  kconfig_path = "//kernel/kconfig/config/Kconfig"
-  autoconf_path = "${root_gen_dir}/.config"
-  app_conf = "app.conf"
+  app_conf = [ "app.conf" ]
   crate_name = "shell"
   crate_type = "bin"
   sources = [ "src/main.rs" ]
   deps = [
     "//external/vendor/phf-0.12.1:phf",
-    "//kernel/kconfig:generate_rustflags_file",
     "//kernel/rsrt:rsrt_std",
     "//libc",
     "//librs",
+    "//kernel/kconfig:generate_rustflags_file",
   ]
-  configs = [
-    "//build/boards/${board}:kernel_config",
+  configs = [ 
+    "//build/boards/${board}:kernel_config", 
     "//kernel/kconfig:kconfigs",
   ]
 }
