@@ -22,6 +22,8 @@ pub mod echo;
 pub mod free;
 pub mod help;
 pub mod ls;
+pub mod magic;
+pub mod meminfo;
 pub mod mkdir;
 pub mod mount;
 pub mod printf;
@@ -31,6 +33,7 @@ pub mod rmdir;
 pub mod touch;
 pub mod truncate;
 pub mod umount;
+pub mod uptime;
 
 extern crate phf;
 use self::phf::{phf_map, Map};
@@ -73,6 +76,18 @@ pub static COMMANDS: Map<&'static str, CommandInfo> = phf_map! {
     "ls" => CommandInfo {
         handler: ls::command,
         description: "List directory contents, usage: ls [-a] [-l] [directory]",
+    },
+    "magic" => CommandInfo {
+        handler: magic::command,
+        description: "Call our brand-new Magic syscall, usage: magic",
+    },
+    "uptime" => CommandInfo {
+        handler: uptime::command,
+        description: "Show system uptime in ms via Uptime syscall, usage: uptime",
+    },
+    "meminfo" => CommandInfo {
+        handler: meminfo::command,
+        description: "Show kernel memory stats via MemInfo syscall, usage: meminfo",
     },
     "mkdir" => CommandInfo {
         handler: mkdir::command,
