@@ -24,8 +24,11 @@ reload_autoconf_and_build("shell") {
   sources = [ "src/main.rs" ]
   deps = [
     "//external/vendor/phf-0.12.1:phf",
+    "//kernel/allocator:allocator_crate",
+    "//kernel/header:blueos_header",
     "//kernel/kconfig:generate_rustflags_file",
     "//kernel/rsrt:rsrt_std",
+    "//kernel/scal:blueos_scal",
     "//libc",
     "//librs",
   ]
