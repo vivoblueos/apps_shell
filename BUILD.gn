@@ -18,10 +18,8 @@ import("//build/templates/dynamic_app.gni")
 import("//build/templates/reload_autoconf_and_build.gni")
 import("//build/toolchain/blueos.gni")
 
-if (board == "qemu_mps2_an385") {
-  # The Thumbv7 bootstrap shell is a C-style no_std dynamic PIE. Keep this
-  # source tree and link policy board-local so every other architecture retains
-  # the static shell from origin/main.
+if (defined(boot_dynamic_seed) && boot_dynamic_seed) {
+  # Boards with a boot system image launch the bootstrap shell as a no_std PIE.
   dynamic_app("shell") {
     sources = [ "src_dynamic/main.rs" ]
     start_object = "//librs:blueos_scrt1"
@@ -29,8 +27,8 @@ if (board == "qemu_mps2_an385") {
       "//external/vendor/phf-0.12.1:phf",
       "//libc",
       "//librs:blueos_scrt1",
-      "//librs:libc",
     ]
+    data_deps = [ "//librs:libc" ]
     _lib_dir = rebase_path("${root_out_dir}/lib")
     rustflags = [
       "-Clink-arg=-L${_lib_dir}",
